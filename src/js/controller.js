@@ -4,10 +4,7 @@ import 'regenerator-runtime'; // Polyfilling async await
 
 import * as model from './model.js';
 import recipeView from './views/recipeView.js';
-
-// https://forkify-api.herokuapp.com/v2
-
-///////////////////////////////////////
+import searchView from './views/searchView.js';
 
 const controlRecipes = async function () {
   try {
@@ -29,9 +26,24 @@ const controlRecipes = async function () {
   }
 }
 
+const controlSearchResults = async function () {
+  try {
+    const query = searchView.getQuery();
+    if (!query) return;
+    searchView.clearInput();
+    await model.loadSearchResults(query);
+
+    console.log(model.state.search.results);
+  } catch (error) {
+
+  }
+}
+
 // Subscriber Publisher pattern
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
+  searchView.addHandlerSearch(controlSearchResults);
 }
 
 init();
+controlSearchResults();
