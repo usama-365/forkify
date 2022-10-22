@@ -1,0 +1,8 @@
+# VSCode workspace files
+workspace.code-workspace
+# Node modules
+node_modules
+# NPM Lock file
+package-lock.json
+# Parcel cache
+.parcel-cache
