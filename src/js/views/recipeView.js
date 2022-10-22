@@ -5,13 +5,24 @@ import { Fraction } from 'fractional';
 import View from './View.js';
 
 class RecipeView extends View {
-    _parentElement = document.querySelector('.recipe');
-    _errorMessage = 'We could not find that recipe. Please try again.';
-    _message = '';
+  _parentElement = document.querySelector('.recipe');
+  _errorMessage = 'We could not find that recipe. Please try again.';
+  _message = '';
+
+  addHandlerUpdateServings(handler) {
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--tiny');
+      // console.log("Here");
+      if (!btn) return;
+      const updateTo = +btn.dataset.updateTo;
+      if (updateTo > 0)
+        handler(updateTo);
+    });
+  }
 
 
-    _generateMarkup() {
-        return `<figure class="recipe__fig">
+  _generateMarkup() {
+    return `<figure class="recipe__fig">
         <img src="${this._data.image}" alt="${this._data.title}" class="recipe__img" />
         <h1 class="recipe__title">
           <span>${this._data.title}</span>
@@ -34,12 +45,12 @@ class RecipeView extends View {
           <span class="recipe__info-text">servings</span>
         
           <div class="recipe__info-buttons">
-            <button class="btn--tiny btn--increase-servings">
+            <button class="btn--tiny btn--increase-servings" data-update-to="${this._data.servings - 1}">
               <svg>
                 <use href="${icons}#icon-minus-circle"></use>
               </svg>
             </button>
-            <button class="btn--tiny btn--increase-servings">
+            <button class="btn--tiny btn--increase-servings" data-update-to="${this._data.servings + 1}">
               <svg>
                 <use href="${icons}#icon-plus-circle"></use>
               </svg>
@@ -86,10 +97,10 @@ class RecipeView extends View {
           </svg>
         </a>
         </div>`;
-    }
+  }
 
-    _generateMarkupIngredient(ingredient) {
-        return `
+  _generateMarkupIngredient(ingredient) {
+    return `
         <li class="recipe__ingredient">
           <svg class="recipe__icon">
             <use href="${icons}#icon-check"></use>
@@ -100,12 +111,12 @@ class RecipeView extends View {
             ${ingredient.description}
           </div>
         </li>`;
-    }
+  }
 
-    // Register when to react to how to react, subscriber publisher pattern
-    addHandlerRender(handlerFunction) {
-        ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handlerFunction));
-    }
+  // Register when to react to how to react, subscriber publisher pattern
+  addHandlerRender(handlerFunction) {
+    ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handlerFunction));
+  }
 }
 
 export default new RecipeView();
