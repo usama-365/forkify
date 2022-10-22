@@ -3,14 +3,15 @@ import 'core-js/stable'; // Polyfill everything else
 import 'regenerator-runtime'; // Polyfilling async await
 
 import * as model from './model.js';
+import paginationView from './views/paginationView.js';
 import recipeView from './views/recipeView.js';
 import resultsView from './views/resultsView.js';
 import searchView from './views/searchView.js';
 
 // Hot reload by parcel
-if (module.hot) {
-  module.hot.accept();
-}
+// if (module.hot) {
+//   module.hot.accept();
+// }
 
 const controlRecipes = async function () {
   try {
@@ -39,15 +40,22 @@ const controlSearchResults = async function () {
     searchView.clearInput();
     resultsView.renderSpinner();
     await model.loadSearchResults(query);
-    resultsView.render(model.state.search.results);
+    resultsView.render(model.getSearchResultPage(1));
+    paginationView.render(model.state.search);
   } catch (error) {
   }
+}
+
+const controlPagination = function (goToPage) {
+  resultsView.render(model.getSearchResultPage(goToPage));
+  paginationView.render(model.state.search);
 }
 
 // Subscriber Publisher pattern
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
   searchView.addHandlerSearch(controlSearchResults);
+  paginationView.addHandlerClick(controlPagination);
 }
 
 init();
