@@ -5,8 +5,6 @@ import 'regenerator-runtime'; // Polyfilling async await
 import * as model from './model.js';
 import recipeView from './views/recipeView.js';
 
-const recipeContainer = document.querySelector('.recipe');
-
 // https://forkify-api.herokuapp.com/v2
 
 ///////////////////////////////////////
@@ -27,11 +25,13 @@ const controlRecipes = async function () {
     // Rendering recipe
     recipeView.render(recipe);
   } catch (error) {
-    alert(error);
+    recipeView.renderError(error);
   }
 }
 
-// Adding event listener
-// ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, controlRecipes));
-window.addEventListener('hashchange', controlRecipes);
-window.addEventListener('load', controlRecipes);
+// Subscriber Publisher pattern
+const init = function () {
+  recipeView.addHandlerRender(controlRecipes);
+}
+
+init();
