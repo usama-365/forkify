@@ -555,6 +555,8 @@ const controlRecipes = async function() {
         if (!hashID) return;
         // Rendering spinner
         (0, _recipeViewJsDefault.default).renderSpinner();
+        // Update
+        (0, _resultsViewJsDefault.default).update(_modelJs.getSearchResultPage(_modelJs.state.search.page));
         // Loading recipe
         await _modelJs.loadRecipe(hashID);
         const { recipe  } = _modelJs.state;
@@ -2347,7 +2349,7 @@ const state = {
     search: {
         query: "",
         page: 1,
-        results: {},
+        results: [],
         resultsPerPage: (0, _configJs.RESULTS_PER_PAGE)
     }
 };
@@ -2863,7 +2865,6 @@ class View {
         this._parentElement.insertAdjacentHTML("afterbegin", markup);
     }
     update(data) {
-        if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
         this._data = data;
         const newMarkup = this._generateMarkup();
         const virtualDOM = document.createRange().createContextualFragment(newMarkup);
@@ -2957,22 +2958,23 @@ class ResultsView extends (0, _viewJsDefault.default) {
         return this._data.map(this._generateMarkupPreview).join("");
     }
     _generateMarkupPreview(result) {
+        const id = window.location.hash.slice(1);
         return `<li class="preview">
-            <a class="preview__link" href="#${result.id}">
+            <a class="preview__link ${result.id === id ? "preview__link--active" : ""}" href="#${result.id}">
                 <figure class="preview__fig">
-                <img src="${result.image}" alt="${result.title}" />
-                </figure>
+                    <img src="${result.image}" alt="${result.title}" />
+                </figure >
                 <div class="preview__data">
-                <h4 class="preview__title">${result.title}</h4>
-                <p class="preview__publisher">${result.publisher}</p>
-                <!--<div class="preview__user-generated">
+                    <h4 class="preview__title">${result.title}</h4>
+                    <p class="preview__publisher">${result.publisher}</p>
+                    <!--<div class="preview__user-generated">
                     <svg>
-                    <use href="${0, _iconsSvgDefault.default}#icon-user"></use>
+                        <use href="${0, _iconsSvgDefault.default}#icon-user"></use>
                     </svg>
-                </div>-->
+                    </div>-->
                 </div>
-            </a>
-        </li>`;
+            </a >
+        </li > `;
     }
 }
 exports.default = new ResultsView();

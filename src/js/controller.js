@@ -22,6 +22,9 @@ const controlRecipes = async function () {
     // Rendering spinner
     recipeView.renderSpinner();
 
+    // Update
+    resultsView.update(model.getSearchResultPage(model.state.search.page));
+
     // Loading recipe
     await model.loadRecipe(hashID);
     const { recipe } = model.state;
@@ -40,6 +43,7 @@ const controlSearchResults = async function () {
     if (!query) return;
     searchView.clearInput();
     resultsView.renderSpinner();
+
     await model.loadSearchResults(query);
     resultsView.render(model.getSearchResultPage(1));
     paginationView.render(model.state.search);
