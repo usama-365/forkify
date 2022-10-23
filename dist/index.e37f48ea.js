@@ -583,7 +583,7 @@ const controlServings = function(newServings) {
     // Update the recipe serving (in state)
     _modelJs.updateServing(newServings);
     // Update the recipe view
-    (0, _recipeViewJsDefault.default).render(_modelJs.state.recipe);
+    (0, _recipeViewJsDefault.default).update(_modelJs.state.recipe);
 };
 // Subscriber Publisher pattern
 const init = function() {
@@ -2861,6 +2861,27 @@ class View {
         const markup = this._generateMarkup();
         this._clear();
         this._parentElement.insertAdjacentHTML("afterbegin", markup);
+    }
+    update(data) {
+        if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
+        this._data = data;
+        const newMarkup = this._generateMarkup();
+        const virtualDOM = document.createRange().createContextualFragment(newMarkup);
+        const newElements = [
+            ...virtualDOM.querySelectorAll("*")
+        ];
+        const currentElements = [
+            ...this._parentElement.querySelectorAll("*")
+        ];
+        newElements.forEach((newElement, i)=>{
+            const currentElement = currentElements[i];
+            // Update change text
+            if (!currentElement.isEqualNode(newElement) && newElement.firstChild?.nodeValue.trim() !== "") currentElement.textContent = newElement.textContent;
+            // Update change attributes
+            if (!newElement.isEqualNode(currentElement)) [
+                ...newElement.attributes
+            ].forEach((attr)=>currentElement.setAttribute(attr.name, attr.value));
+        });
     }
     renderSpinner() {
         const markup = `<div class="spinner">
