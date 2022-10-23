@@ -8,6 +8,8 @@ import recipeView from './views/recipeView.js';
 import resultsView from './views/resultsView.js';
 import searchView from './views/searchView.js';
 import bookmarksView from './views/bookmarksView.js';
+import addRecipeView from './views/addRecipeView.js';
+import { MODAL_CLOSE_SECOND } from './config.js';
 
 // Hot reload by parcel
 // if (module.hot) {
@@ -81,6 +83,21 @@ const controlBookmarks = function () {
   bookmarksView.render(model.state.bookmark);
 }
 
+const controlAddRecipe = async function (newRecipe) {
+  try {
+    addRecipeView.renderSpinner();
+    await model.uploadRecipe(newRecipe);
+    recipeView.render(model.state.recipe);
+    addRecipeView.renderMessage();
+    bookmarksView.render(model.state.bookmark);
+    window.history.pushState(null, '', `#${model.state.recipe.id}`);
+    // window.history.back();
+    setTimeout(function () { addRecipeView.toggleWindow(); }, MODAL_CLOSE_SECOND * 1000);
+  } catch (err) {
+    addRecipeView.renderError(err.message);
+  }
+}
+
 // Subscriber Publisher pattern
 const init = function () {
   bookmarksView.addHandlerRender(controlBookmarks);
@@ -89,6 +106,7 @@ const init = function () {
   recipeView.addHandlerAddBookmark(controlAddBookmark);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
+  addRecipeView.addHandlerUpload(controlAddRecipe);
 }
 
 init();
