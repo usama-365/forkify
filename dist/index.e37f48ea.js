@@ -599,8 +599,12 @@ const controlAddBookmark = function() {
     // Render bookmarks
     (0, _bookmarksViewJsDefault.default).render(_modelJs.state.bookmark);
 };
+const controlBookmarks = function() {
+    (0, _bookmarksViewJsDefault.default).render(_modelJs.state.bookmark);
+};
 // Subscriber Publisher pattern
 const init = function() {
+    (0, _bookmarksViewJsDefault.default).addHandlerRender(controlBookmarks);
     (0, _recipeViewJsDefault.default).addHandlerRender(controlRecipes);
     (0, _recipeViewJsDefault.default).addHandlerUpdateServings(controlServings);
     (0, _recipeViewJsDefault.default).addHandlerAddBookmark(controlAddBookmark);
@@ -2417,16 +2421,29 @@ const updateServing = function(newServing) {
     });
     state.recipe.servings = newServing;
 };
+const persistBookmarks = function() {
+    localStorage.setItem("bookmarks", JSON.stringify(state.bookmark));
+};
 const addBookmark = function(recipe) {
     // Add bookmark
     state.bookmark.push(recipe);
     // Mark current recipe as bookmark
     if (recipe.id === state.recipe.id) state.recipe.bookmarked = true;
+    persistBookmarks();
 };
 const deleteBookmark = function(id) {
     const index = state.bookmark.findIndex((el)=>el.id === id);
     state.bookmark.splice(index, 1);
     if (id === state.recipe.id) state.recipe.bookmarked = false;
+    persistBookmarks();
+};
+const init = function() {
+    const bookmarks = localStorage.getItem("bookmarks");
+    if (bookmarks) state.bookmark = JSON.parse(bookmarks);
+};
+init();
+const clearBookmarks = function() {
+    localStorage.clear("bookmarks");
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","regenerator-runtime":"dXNgZ","./config.js":"k5Hzs","./helpers.js":"hGI1E"}],"k5Hzs":[function(require,module,exports) {
@@ -3090,6 +3107,9 @@ class BookmarksView extends (0, _viewJsDefault.default) {
     _message = "";
     _generateMarkup() {
         return this._data.map((bookmark)=>(0, _previewViewJsDefault.default).render(bookmark, false)).join("");
+    }
+    addHandlerRender(handler) {
+        window.addEventListener("load", handler);
     }
 }
 exports.default = new BookmarksView();

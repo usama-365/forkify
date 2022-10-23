@@ -30,9 +30,9 @@ const controlRecipes = async function () {
     // Loading recipe
     await model.loadRecipe(hashID);
     const { recipe } = model.state;
-
     // Rendering recipe
     recipeView.render(recipe);
+
 
   } catch (error) {
     recipeView.renderError(error);
@@ -77,8 +77,13 @@ const controlAddBookmark = function () {
   bookmarksView.render(model.state.bookmark);
 }
 
+const controlBookmarks = function () {
+  bookmarksView.render(model.state.bookmark);
+}
+
 // Subscriber Publisher pattern
 const init = function () {
+  bookmarksView.addHandlerRender(controlBookmarks);
   recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerUpdateServings(controlServings);
   recipeView.addHandlerAddBookmark(controlAddBookmark);
